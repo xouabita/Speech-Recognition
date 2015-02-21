@@ -11,5 +11,11 @@ Speech Recognition
 ```bash
 brew install libsndfile
 brew install gnuplot
-make
+```
+
+### Usage
+
+```bash
+make visualize
+./visualize # output: waveform.png
 ```
