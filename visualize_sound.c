@@ -37,7 +37,7 @@ int main (int argc, char * argv[]) {
   FILE * gp = popen("gnuplot","w");
   fprintf(gp, "set term png\n");
   fprintf(gp, "set out \"waveform.png\"\n");
-  fprintf(gp, "plot '-' with lines\n");
+  fprintf(gp, "plot '-' with lines title \"%s\"\n", argv[1]);
 
   for (int i=1; i < nb_samples; i+=2)
     fprintf(gp, "%f\n",samples[i]);
