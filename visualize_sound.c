@@ -6,7 +6,8 @@
 int main (int argc, char * argv[]) {
   SF_INFO file_info;
   if (argc < 2) {
-    printf("Usage:\n%s file.wav", argv[0]);
+    printf("Usage:\n%s file.wav\n", argv[0]);
+    return 1;
   }
   SNDFILE * file = sf_open(argv[1], SFM_READ, &file_info);
 
