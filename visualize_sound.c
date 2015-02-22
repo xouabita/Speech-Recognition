@@ -3,9 +3,12 @@
 #include <stdio.h>
 #include <unistd.h>
 
-int main () {
+int main (int argc, char * argv[]) {
   SF_INFO file_info;
-  SNDFILE * file = sf_open("oui.wav", SFM_READ, &file_info);
+  if (argc < 2) {
+    printf("Usage:\n%s file.wav", argv[0]);
+  }
+  SNDFILE * file = sf_open(argv[1], SFM_READ, &file_info);
 
   int nb_samples = file_info.channels * file_info.frames;
   float * samples  = malloc(nb_samples*sizeof(float));
