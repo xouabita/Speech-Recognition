@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <math.h>
+#ifndef M_PI
+    #define M_PI 3.14159265358979323846f
+#endif
 
 // Take sound data with any amounts of channels and return a mono
 // data by doing the average between the two channels
@@ -51,6 +55,15 @@ int main (int argc, char * argv[]) {
 	}
     segmentation[k][i % samplerate]=samples[i];
     }
+//fenetrage
+  float n= samplerate/(nb_samples-1);
+  float w=0.54f - 0.46f* cosf(n*M_PI);
+  for(int i=0; i< trame; i++)
+    for(int j=0; j<samplerate;j++)
+    {
+    segmentation[i][j]*=w;
+    }
+//fenetrage                     
   FILE * gp = popen("gnuplot","w");
   fprintf(gp, "set term png\n");
   fprintf(gp, "set out \"waveform.png\"\n");
