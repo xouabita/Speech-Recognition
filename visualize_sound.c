@@ -7,6 +7,18 @@
     #define M_PI 3.14159265358979323846f
 #endif
 
+// save a graph with an array of float
+void print_graph (float * data, int data_size, char * graph_name, char * png_name) {
+  FILE * gp = popen("gnuplot","w");
+  fprintf(gp, "set term png\n");
+  fprintf(gp, "set out \"waveform.png\"\n");
+  fprintf(gp, "plot '-' with lines title \"%s\"\n", graph_name);
+
+  for (int i=0; i < data_size; ++i)
+    fprintf(gp, "%f\n", data[i]);
+  fprintf(gp,"e\n");
+}
+
 // Take sound data with any amounts of channels and return a mono
 // data by doing the average between the two channels
 float * make_mono (float * data, SF_INFO file_info) {
@@ -46,6 +58,9 @@ int main (int argc, char * argv[]) {
 
   float * mono = make_mono(samples, file_info);
 
+  // Print the data
+  print_graph (mono, file_info.frames, argv[1], "waveform.png");
+
   int k=0;
   printf("%d\n",nb_samples);
   for(int i=0; i<nb_samples; i++){
@@ -65,15 +80,6 @@ int main (int argc, char * argv[]) {
       segmentation[i][j]*=w;
     }
   //fenetrage
-
-  FILE * gp = popen("gnuplot","w");
-  fprintf(gp, "set term png\n");
-  fprintf(gp, "set out \"waveform.png\"\n");
-  fprintf(gp, "plot '-' with lines title \"%s\"\n", argv[1]);
-
-  for (int i=0; i < nb_samples; ++i)
-    fprintf(gp, "%f\n",samples[i]);
-  fprintf(gp,"e\n");
   free(samples);
   free(mono);
   for(int i=0; i<trame;i++)
