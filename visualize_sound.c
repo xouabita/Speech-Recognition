@@ -64,6 +64,16 @@ int main (int argc, char * argv[]) {
   // Print the data
   print_graph (mono, file_info.frames, argv[1], "waveform.png");
 
+  // Pre-accentuation
+  float * preemphase = malloc(sizeof(float)*file_info.frames);
+  preemphase[0] = mono[0];
+  for (int i=1; i < file_info.frames; ++i) {
+    preemphase[i] = mono[i] - 0.9 * mono[i-1];
+  }
+
+  // Print the preemphase
+  print_graph (preemphase, file_info.frames, argv[1], "preemphase.png");
+
   int k=0;
   printf("%d\n",nb_samples);
   for(int i=0; i<nb_samples; i++){
@@ -88,6 +98,7 @@ int main (int argc, char * argv[]) {
   for(int i=0; i<trame;i++)
     free(segmentation[i]);
   free(segmentation);
+  free(preemphase);
   sf_close(file);
 
   return 0;
