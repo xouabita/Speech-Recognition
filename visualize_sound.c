@@ -50,20 +50,22 @@ int main (int argc, char * argv[]) {
   printf("%d\n",nb_samples);
   for(int i=0; i<nb_samples; i++){
     if(i % samplerate==0)
-	{
-	k++;
-	}
-    segmentation[k][i % samplerate]=samples[i];
+    {
+      k++;
     }
-//fenetrage
+    segmentation[k][i % samplerate]=samples[i];
+  }
+
+  //fenetrage
   float n= samplerate/(nb_samples-1);
   float w=0.54f - 0.46f* cosf(n*M_PI);
   for(int i=0; i< trame; i++)
     for(int j=0; j<samplerate;j++)
     {
-    segmentation[i][j]*=w;
+      segmentation[i][j]*=w;
     }
-//fenetrage                     
+  //fenetrage
+
   FILE * gp = popen("gnuplot","w");
   fprintf(gp, "set term png\n");
   fprintf(gp, "set out \"waveform.png\"\n");
@@ -75,7 +77,7 @@ int main (int argc, char * argv[]) {
   free(samples);
   free(mono);
   for(int i=0; i<trame;i++)
-	free(segmentation[i]);
+    free(segmentation[i]);
   free(segmentation);
   sf_close(file);
 
