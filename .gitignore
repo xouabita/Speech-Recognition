@@ -2,6 +2,6 @@
 *.swo
 .DS_Store
 visualize
-waveform.png
+*.png
 *~
 *.dSYM
