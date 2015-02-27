@@ -11,12 +11,15 @@
 void print_graph (float * data, int data_size, char * graph_name, char * png_name) {
   FILE * gp = popen("gnuplot","w");
   fprintf(gp, "set term png\n");
-  fprintf(gp, "set out \"waveform.png\"\n");
+  fprintf(gp, "set out \"%s\"\n", png_name);
   fprintf(gp, "plot '-' with lines title \"%s\"\n", graph_name);
 
   for (int i=0; i < data_size; ++i)
     fprintf(gp, "%f\n", data[i]);
   fprintf(gp,"e\n");
+
+  fflush(gp);
+  pclose(gp);
 }
 
 // Take sound data with any amounts of channels and return a mono
