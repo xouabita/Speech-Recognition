@@ -34,7 +34,7 @@ int main (int argc, char * argv[]) {
   for (int i=0; i < segments.trame; ++i) {
     char buffer[100];
     sprintf(buffer,"segment_%d.png", i);
-    print_graph(segments.data[i], file_info.frames, argv[1], buffer);
+    print_graph(segments.data[i], segments.samplerate, argv[1], buffer);
   }
 
   complex float ** fft_result = fft(segments);
