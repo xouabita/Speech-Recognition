@@ -20,12 +20,22 @@ int main (int argc, char * argv[]) {
   sf_read_float(file, samples, nb_samples);
 
   float * mono = make_mono(samples, file_info);
+  print_graph (mono, file_info.frames, argv[1], "mono.png");
 
   float * without_silence = silence (mono, file_info, 0.1);
+  print_graph (without_silence, file_info.frames, argv[1], "without_silence.png");
 
   float * preemphased = preemphase (without_silence, file_info);
+  print_graph (preemphased, file_info.frames, argv[1], "preemphase.png");
 
   Segments segments = segmentation(preemphased, file_info);
+
+  // Print all segments
+  for (int i=0; i < segments.trame; ++i) {
+    char buffer[100];
+    sprintf(buffer,"segment_%d.png", i);
+    print_graph(segments.data[i], file_info.frames, argv[1], buffer);
+  }
 
   complex float ** fft_result = fft(segments);
 

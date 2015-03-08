@@ -6,7 +6,7 @@ void print_graph (float * data, int data_size, char * graph_name, char * png_nam
   FILE * gp = popen("gnuplot","w");
   fprintf(gp, "set term png\n");
   fprintf(gp, "set out \"%s\"\n", png_name);
-  fprintf(gp, "set yrange [-1:1]\n");
+  //fprintf(gp, "set yrange [-1:1]\n");
   fprintf(gp, "set xrange [0:%d]\n", data_size);
   fprintf(gp, "plot '-' with lines title \"%s\"\n", graph_name);
 

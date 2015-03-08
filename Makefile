@@ -7,6 +7,7 @@ clean:
 	rm -f  ./src/*.o
 	rm -f  pretreatment_demo
 	rm -rf *.dSYM
+	rm -f  *.png
 
 debug: CCFLAGS += -g
 debug: clean default
