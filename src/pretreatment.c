@@ -48,17 +48,39 @@ float * preemphase (float * data, SF_INFO file_info) {
 Segments segmentation (float * data, SF_INFO file_info) {
 
   int samplerate  = file_info.samplerate/50;
-  int trame       = (file_info.frames/samplerate)+2;
+  int nb_samples  = file_info.channels * file_info.frames;
+  int trame;
+  if(nb_samples % samplerate == 0)
+	trame=nb_samples/samplerate;
+  else
+ 	trame=(nb_samples/samplerate)+1;
+  trame+=trame-1;
   float ** result = malloc(trame * sizeof(float*));
   for (int i=0; i<trame; ++i) {
     result[i] = malloc(samplerate*sizeof(float));
   }
 
-  int k = 0;
-  for (int i=0; i<file_info.frames; i++) {
-    if (i % samplerate == 0) k++;
-    result[k][i % samplerate] = data[i];
+  int k = 0,i=0, index=0, j=1, m= samplerate/2;
+  int l=m;
+  result[k][i]=data[i];
+  i++;
+    while(k<trame && i<nb_samples){
+	if(i % (samplerate)==0)
+		k+=2;
+	result[k][i%(samplerate)]=data[i];
+	i++;
   }
+  while(j<=trame-1){
+    result[j][index]=data[m];
+	m++;
+	index++;
+	if(m % (l+samplerate)==0){
+		j+=2;
+		l=m;
+		index=0;
+	}
+  }
+
 
   int   n = samplerate/(file_info.frames-1);
   float w = 0.54f - 0.46f * cosf(n*M_PI);
