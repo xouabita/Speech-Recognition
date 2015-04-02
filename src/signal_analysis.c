@@ -8,10 +8,12 @@ return sqrt((x*x)+(y*y));
 }
 
 
-Segments cepstral(complex float **segments, int trame, int fft_length, int samplerate){
+float** cepstral(complex float **segments, int trame, int fft_length, int samplerate){
+float **result=malloc(sizeof(segments));
 for(int i=0;i<trame;i++)
 	for(int j=0; j<fft_length; j++)
-	segments[i][j]=module(segment[i][j])*module(segment[i][j]/samplerate;	//periodogram estimate of the power spectrum
+	result[i][j]=module(segment[i][j])*module(segment[i][j]/samplerate;	//periodogram estimate of the power spectrum
+return result;
 }
 
 float hertz_to_mel (int i , int samplerate){
@@ -23,12 +25,24 @@ float hertz_to_mel (int i , int samplerate){
 
 float mel_to_hertz(int samplerate, int i)
 {
-return 700*exp((hertz_to_mel(i,samplerate)/1125)-1);
+	return 700*exp((hertz_to_mel(i,samplerate)/1125)-1);
 }
 
 float fft_bin(int i, int samplerate,int fft_length)
 {
 	return floorf(((fft_length+1)*mel_to_hertz(samplerate,i))/samplerate);
+}
+
+float mel_filterbank(int m, int k)
+{
+	if(k<fft_bin(m-1)
+		return 0;
+	if(k>=fft_bin(m-1) && k<=fft_bin(m))
+		return (k-fft_bin(m-1))/(fft_bin(m)-fft_bin(m-1));
+	if(k<=fft_bin(m+1) && k>=fft_bin(m))
+		return (fft_bin(m+1)-k)/(fft_bin(m+1)-fft_bin(m));
+	else
+		return 0;
 }
 
 
