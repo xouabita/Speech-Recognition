@@ -1,23 +1,17 @@
 #include "pretreatment.h"
 #include <math.h>
 
-float complexlog(float complex nb){
+float module(float complex nb){
 float x=crealf(nb);
 float y=cimagf(nb);
-return logf(sqrt((x*x)+(y*y)));
+return sqrt((x*x)+(y*y));
 }
 
 
-Segments cepstral(complex float **segments, int trame, int samplerate){
+Segments cepstral(complex float **segments, int trame, int fft_length, int samplerate){
 for(int i=0;i<trame;i++)
-	for(int j=0; j<samplerate; j++)
-	segments[i][j]=complexlog(segment[i][j]);
-	
-fft_inverse(segments);
-for(int i=0;i<trame;i++)
-	for(int j=0;j<samplerate;j++)
-	segments[i][j]*=1+(samplerate/2)*sinf(M_PI*(j+1)/samplerate);
-
-
+	for(int j=0; j<fft_length; j++)
+	segments[i][j]=module(segment[i][j])*module(segment[i][j]/samplerate;	//periodogram estimate of the power spectrum
 }
+
 
