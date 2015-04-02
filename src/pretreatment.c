@@ -107,11 +107,11 @@ complex float complexp (float complex nb) {
 complex float **  fft (Segments segments) {
   complex float ** result = malloc(sizeof(complex float *) * segments.trame);
   for (int i = 0; i < segments.trame; ++i) {
-    result[i] = malloc(sizeof(complex float) * segments.samplerate);
-    for (int k = 0; k < segments.samplerate; k++) {
-      complex float part = (-2 * M_PI * I * (k-1)) / segments.samplerate;
+    result[i] = malloc(sizeof(complex float) * 512);
+    for (int k = 0; k < 512; k++) {
+      complex float part = (-2 * M_PI * I * (k+1)) / segments.samplerate;
       for (int j = 0; j <  segments.samplerate; j++) {
-        result[i][k] += segments.data[i][j] * complexp(part*(j-1));
+        result[i][k] += segments.data[i][j] * complexp(part*(j+1));
       }
     }
   }
