@@ -45,4 +45,26 @@ float mel_filterbank(int m, int k)
 		return 0;
 }
 
+float ** coef_cep(float ** power_spectrum, int fft_length, int trame)
+{
+		float **coef=malloc(sizeof(float*)*trame);
+		for(int i=0; i<trame; i++)
+			coef[i]=malloc(sizeof(float)*12);
+		for(int i=0; i<trame; i++){
+			int m=0;
+			int k=0;
+			while(k<fft_length/2 && m<12)
+				{
+				coef[i][m]+=mel_filterbank(m+1,k)*power_spectrum[i][k];
+				if(k>fft_bin(m+1))
+					m++;
+				k++;
+				}
+		}
+		return coef;
+}	
+
+
+
+
 
