@@ -47,34 +47,34 @@ float * preemphase (float * data, SF_INFO file_info) {
 
 Segments segmentation (float * data, SF_INFO file_info) {
 
-  int samplerate  = file_info.samplerate/50;
+  int nb_per_trame  = file_info.samplerate/50;
   int nb_samples  = file_info.channels * file_info.frames;
   int trame;
-  if(nb_samples % samplerate == 0)
-	trame=nb_samples/samplerate;
+  if(nb_samples % nb_per_trame == 0)
+	trame=nb_samples/nb_per_trame;
   else
- 	trame=(nb_samples/samplerate)+1;
+ 	trame=(nb_samples/nb_per_trame)+1;
   trame+=trame-1;
   float ** result = malloc(trame * sizeof(float*));
   for (int i=0; i<trame; ++i) {
-    result[i] = malloc(samplerate*sizeof(float));
+    result[i] = malloc(nb_per_trame*sizeof(float));
   }
 
-  int k = 0,i=0, index=0, j=1, m= samplerate/2;
+  int k = 0,i=0, index=0, j=1, m= nb_per_trame/2;
   int l=m;
   result[k][i]=data[i];
   i++;
     while(k<trame && i<nb_samples){
-	if(i % (samplerate)==0)
+	if(i % (nb_per_trame)==0)
 		k+=2;
-	result[k][i%(samplerate)]=data[i];
+	result[k][i%(nb_per_trame)]=data[i];
 	i++;
   }
   while(j<=trame-1){
     result[j][index]=data[m];
 	m++;
 	index++;
-	if(m % (l+samplerate)==0){
+	if(m % (l+nb_per_trame)==0){
 		j+=2;
 		l=m;
 		index=0;
@@ -82,17 +82,17 @@ Segments segmentation (float * data, SF_INFO file_info) {
   }
 
 
-  int   n = samplerate/(file_info.frames-1);
+  int   n = nb_per_trame/(file_info.frames-1);
   float w = 0.54f - 0.46f * cosf(n*M_PI);
   for (int i=0; i < trame; i++) {
-    for (int j=0; j< samplerate; j++) {
+    for (int j=0; j< nb_per_trame; j++) {
       result[i][j]*=w;
     }
   }
 
   Segments segments;
   segments.trame      = trame;
-  segments.samplerate = samplerate;
+  segments.samplerate = nb_per_trame;
   segments.data       = result;
 
   return segments;
@@ -104,11 +104,11 @@ complex float complexp (float complex nb) {
   return expf(x) * cosf(y) + I * expf(y) * sinf(y);
 }
 
-complex float **  fft (Segments segments) {
+complex float **  fft (Segments segments, int fft_length) {
   complex float ** result = malloc(sizeof(complex float *) * segments.trame);
   for (int i = 0; i < segments.trame; ++i) {
-    result[i] = malloc(sizeof(complex float) * 1024);
-    for (int k = 0; k < 1024; k++) {
+    result[i] = malloc(sizeof(complex float) * fft_length);
+    for (int k = 0; k < fft_length; k++) {
       complex float part = (-2 * M_PI * I * (k+1)) / segments.samplerate;
       for (int j = 0; j <  segments.samplerate; j++) {
         result[i][k] += segments.data[i][j] * complexp(part*(j+1));

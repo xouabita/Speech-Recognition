@@ -17,6 +17,6 @@ float *  preemphase   (float * data, SF_INFO file_info);
 
 Segments segmentation (float * data, SF_INFO file_info);
 
-complex float ** fft(Segments segments);
+complex float ** fft(Segments segments,int fft_length);
 
 #endif

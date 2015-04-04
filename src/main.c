@@ -4,7 +4,7 @@
 #include <complex.h>
 #include "pretreatment.h"
 #include "gnuplot.h"
-
+#include "signal_analysis.h"
 int main (int argc, char * argv[]) {
 
   SF_INFO file_info;
@@ -15,6 +15,7 @@ int main (int argc, char * argv[]) {
   SNDFILE * file = sf_open(argv[1], SFM_READ, &file_info);
 
   int nb_samples  = file_info.channels * file_info.frames;
+  int samplerate  = file_info.samplerate;
   float * samples = malloc(nb_samples*sizeof(float));
 
   sf_read_float(file, samples, nb_samples);
@@ -29,17 +30,24 @@ int main (int argc, char * argv[]) {
   print_signal (preemphased, file_info.frames, file_info.samplerate, argv[1], "preemphase.png");
 
   Segments segments = segmentation(preemphased, file_info);
-
+  int trame=segments.trame;
+  int fft_length=256;
+  int nb_per_trame=samplerate/50;
   print_graph(segments.data[2], segments.samplerate, argv[1], "segment_2.png");
 
-  complex float ** fft_result = fft(segments);
-
+  complex float ** fft_result = fft(segments,fft_length);
+  float **power_spectrum=cepstral(fft_result, trame, fft_length);
+	print_graph(power_spectrum[4],fft_length,argv[1],"power_spectre.png");
+  double **cepstral_coefficient=coef_cep(fft_result, fft_length, trame, samplerate);
+  for(int i=0; i<trame;i++)
+	for(int j=0;j<13;j++)
+		printf("%d %d %f \n",i,j,cepstral_coefficient[i][j]);
   free(samples);
   free(mono);
   free(without_silence);
   free(preemphased);
   free(segments.data);
   free(fft_result);
-
+  //free(cepstral_coefficient);
   return 0;
 }

@@ -1,4 +1,4 @@
-CCFLAGS = clang -std=c99 -Werror -O3 -pedantic -D_BSD_SOURCE
+CCFLAGS = gcc -std=c99 -g -Werror -pedantic -D_BSD_SOURCE
 BIN     = ./pretreatment_demo
 
 default: $(BIN)
@@ -13,11 +13,14 @@ debug: CCFLAGS += -g
 debug: clean default
 	valgrind --leak-check=yes --dsymutil=yes --suppressions=objc.supp $(BIN) oui.wav
 
-$(BIN): ./src/pretreatment.o ./src/gnuplot.o ./src/main.c
-	$(CCFLAGS) -o $(BIN) $^ -lsndfile -lm
+$(BIN): ./src/pretreatment.o ./src/signal_analysis.o ./src/gnuplot.o ./src/main.c
+	$(CCFLAGS) -o $(BIN) $^	-lsndfile -lm
 
 ./src/pretreatment.o: ./src/pretreatment.c
 	$(CCFLAGS) -o $@ -c $<
 
 ./src/gnuplot.o: ./src/gnuplot.c
+	$(CCFLAGS) -o $@ -c $<
+
+./src/signal_analysis.o: ./src/signal_analysis.c
 	$(CCFLAGS) -o $@ -c $<
