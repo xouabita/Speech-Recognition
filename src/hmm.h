@@ -7,12 +7,11 @@ typedef struct hmm_t {
   float *  startprob;
   float ** transmat_prior;
   float *  startprob_prior;
-  int n_mix;
   int n_iter;
   float threshold;
 } HMM;
 
-HMM * new_HMM    ();
+HMM * new_HMM    (); // Create a new HMM model with the bakis model
 void  delete_HMM (HMM * model);
 
 #endif // HMM_H_
