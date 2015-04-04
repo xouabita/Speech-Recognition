@@ -48,12 +48,17 @@ float mel_filterbank(int m, int k)
 float ** coef_cep(float ** power_spectrum, int fft_length, int trame)
 {
 		float **coef=malloc(sizeof(float*)*trame);
-		for(int i=0; i<trame; i++)
-			coef[i]=malloc(sizeof(float)*12);
+		float **coef_1=malloc(sizeof(float*)*trame);
+		float **coef_final=malloc(sizeof(float*)*trame);
+		for(int i=0; i<trame; i++){
+			coef[i]=malloc(sizeof(float)*26);
+			coef_1[i]=malloc(sizeof(float)*26);
+			coef_final[i]=malloc(sizeof(float)*13);
+		}
 		for(int i=0; i<trame; i++){
 			int m=0;
 			int k=0;
-			while(k<fft_length/2 && m<12)
+			while(k<fft_length/2 && m<26)
 				{
 				coef[i][m]+=mel_filterbank(m+1,k)*power_spectrum[i][k];
 				if(k>fft_bin(m+1))
@@ -61,8 +66,20 @@ float ** coef_cep(float ** power_spectrum, int fft_length, int trame)
 				k++;
 				}
 		}
-		return coef;
-}	
+		for(int i=0; i<trame;i++)
+			coef[i][0]=log10f(coef[i][0];
+			for(int k=1; k<26;j++)
+				for(int m=1; m<26; m++)
+				coef_1[i][k]+=log10f(coef[i][m])*cos((M_PI*k/26)*(m-(1/2)));
+		for(int i=0; i<trame; i++)
+			for(int j=0; j<13; j++)
+			coef_final[i][j]=coef_1[i][j];
+		free(coef);
+		free(coef_1);
+		return coef_final;
+}
+
+	
 
 
 
