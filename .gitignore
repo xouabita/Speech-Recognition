@@ -7,3 +7,5 @@ visualize
 *.dSYM
 src/*.o
 pretreatment_demo
+tests/*.o
+tests/test_hmm
