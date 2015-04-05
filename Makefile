@@ -1,4 +1,4 @@
-CCFLAGS = gcc -std=c99 -g -Werror -pedantic -D_BSD_SOURCE
+CCFLAGS = clang -std=c99 -g -Werror -pedantic -D_BSD_SOURCE
 BIN     = ./pretreatment_demo
 
 default: $(BIN)

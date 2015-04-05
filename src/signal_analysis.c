@@ -3,7 +3,7 @@
 #include <complex.h>
 #include <unistd.h>
 #include <stdlib.h>
-
+#include <stdio.h>
 float module(float complex nb){
 float x=crealf(nb);
 float y=cimagf(nb);
@@ -23,21 +23,23 @@ return result;
 }
 
 float hertz_to_mel (int i , int samplerate){
-	float low_bound = 1125*log(1+20/700);
-	float upper_bound = 1125*log(samplerate/2/700);
-	float gap=(upper_bound-low_bound)/27;
+	float low_bound = 1125.0*logf(1.0+(20.0/700.0));
+	float upper_bound = 1125.0*logf(1.0+(samplerate/2.0/700.0));
+	float gap=(upper_bound-low_bound)/27.0;
 	return (low_bound+(i*gap)); 
 }
 
-float mel_to_hertz(int samplerate, int i)
+
+float mel_to_hertz(int i, int samplerate)
 {
-	return 700*exp((hertz_to_mel(i,samplerate)/1125)-1);
+    return 700*(expf(hertz_to_mel(i,samplerate)/1125.0)-1.0);
 }
 
 float fft_bin(int i, int samplerate,int fft_length)
 {
-	return floorf(((fft_length+1)*mel_to_hertz(samplerate,i))/samplerate);
+    return floorf(((fft_length+1)*mel_to_hertz(i,samplerate))/samplerate);
 }
+
 
 float mel_filterbank(int m, int k,int samplerate, int fft_length)
 {
@@ -48,9 +50,9 @@ float mel_filterbank(int m, int k,int samplerate, int fft_length)
 	if(k<fft_bin_minus)
 		return 0;
 	if(k>=fft_bin_minus && k<=fft_bin_m)
-		return (k-fft_bin_minus)/(fft_bin_m-fft_bin_minus);
+		return ((float)(k-fft_bin_minus))/(fft_bin_m-fft_bin_minus);
 	if(k<=fft_bin_plus && k>=fft_bin_m)
-		return (fft_bin_plus-k)/(fft_bin_plus-fft_bin_m);
+		return (float)(fft_bin_plus-k)/(fft_bin_plus-fft_bin_m);
 	else
 		return 0;
 }
@@ -67,21 +69,19 @@ double ** coef_cep(complex float **segments,int fft_length, int trame, int sampl
 			coef_final[i]=malloc(sizeof(double)*13);
 		}
 		for(int i=0; i<trame; i++){
-			int m=0;
-			int k=0;
-			while(k<fft_length/2 && m<26)
-				{
-				coef[i][m]+=mel_filterbank(m+1,k,samplerate,fft_length)*power_spectrum[i][k];
-				if(k>fft_bin(m+1,samplerate,fft_length))
-					m++;
-				k++;
+			for(int m=0; m<26; m++){
+				for(int k=0;k<=fft_length/2;k++){
+					//printf("%d %d %d %f\n",i,m+1,k, mel_filterbank(m+1,k, samplerate, fft_length));
+					coef[i][m]+=(mel_filterbank(m+1,k,samplerate,fft_length)*power_spectrum[i][k]);
 				}
+			}
 		}
+
 		for(int i=0; i<trame;i++){
-			coef[i][0]=log10f(coef[i][0]);
-			for(int k=1; k<26;k++)
+			coef_1[i][0]=logf(coef[i][0]);
+			for(int k=1;k<26;k++) 
 				for(int m=1; m<26; m++)
-				coef_1[i][k]+=log10f(coef[i][m])*cos((M_PI*k/26)*(m-(1/2)));
+				coef_1[i][k]+=logf(coef[i][m])*cosf((M_PI*k/26.0)*(m-(1.0/2.0)));
 		}
 		for(int i=0; i<trame; i++)
 			for(int j=0; j<13; j++)
