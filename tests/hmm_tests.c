@@ -4,6 +4,7 @@
 
 int main() {
   HMM * model = new_HMM();
+  assert( model->n_iter == 10 );
   assert( model->n_components == 5 );
 
   float transmat_prior[5][5] = {
