@@ -18,6 +18,7 @@ float ** init_matrice (int n_components, float value[n_components][n_components]
   if (!value) {
     for (int i=0; i < n_components; i++) {
       result[i] = malloc(sizeof(float)*n_components);
+      for (int j=0; j < n_components; j++) result[i][j] = 0.;
     }
   }
   else {
@@ -45,8 +46,11 @@ HMM * new_HMM () {
   model->transmat       = init_matrice(model->n_components, NULL);
   model->transmat_prior = init_matrice(model->n_components, DATA);
   model->startprob      = malloc(sizeof(float)*model->n_components);
-  model->transmat_prior = malloc(sizeof(float)*model->n_components);
-  for (int i=0; i < model->n_components; i++) model->startprob_prior[i] = STARTPROB[i];
+  model->startprob_prior = malloc(sizeof(float)*model->n_components);
+  for (int i=0; i < model->n_components; i++) {
+    model->startprob_prior[i] = STARTPROB[i];
+    model->startprob[i] = 0.;
+  }
   return model;
 }
 
