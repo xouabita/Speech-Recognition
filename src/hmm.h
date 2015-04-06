@@ -5,10 +5,14 @@ struct sufficient_stats_t {
   int nobs;
   float *  start;
   float ** trans;
+  float *  post;
+  float ** obs;
+  float ** square_obs;
 };
 
 typedef struct hmm_t {
   int n_components;  // Number of states in the model
+  int n_features;
   float ** transmat; // Matrix of transition probabilities between states.
   float *  startprob;
   float ** transmat_prior;
@@ -24,6 +28,6 @@ void  delete_HMM (HMM * model);
 
 //Interact w/ model
 
-void fit_HMM(HMM * model, float ** data);
+void fit_HMM(HMM * model, float *** data);
 
 #endif // HMM_H_
