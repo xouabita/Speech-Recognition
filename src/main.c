@@ -5,6 +5,8 @@
 #include "pretreatment.h"
 #include "gnuplot.h"
 #include "signal_analysis.h"
+#include "../NArr/src/narr.h"
+
 int main (int argc, char * argv[]) {
 
   SF_INFO file_info;
@@ -36,7 +38,7 @@ int main (int argc, char * argv[]) {
 
   complex float ** fft_result = fft(segments,fft_length);
   float **power_spectrum=cepstral(fft_result, trame, fft_length);
-	print_graph(power_spectrum[15],fft_length,argv[1],"power_spectre.png");
+  print_graph(power_spectrum[15],fft_length,argv[1],"power_spectre.png");
   double **cepstral_coefficient=coef_cep(fft_result, fft_length, trame, samplerate);
   for(int i=0; i<trame;i++)
 	for(int j=0;j<13;j++)
@@ -47,6 +49,6 @@ int main (int argc, char * argv[]) {
   free(preemphased);
   free(segments.data);
   free(fft_result);
-  free(cepstral_coefficient);
+  delete_NArr(cepstral_coefficient);
   return 0;
 }

@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "../NArr/src/narr.h"
+
 float module(float complex nb){
 float x=crealf(nb);
 float y=cimagf(nb);
@@ -62,11 +64,11 @@ double ** coef_cep(complex float **segments,int fft_length, int trame, int sampl
 		float **power_spectrum=cepstral(segments, trame, fft_length);
 		float **coef=malloc(sizeof(float*)*trame);
 		float **coef_1=malloc(sizeof(float*)*trame);
-		double **coef_final=malloc(sizeof(double*)*trame);
+		double **coef_final = new_NArr(sizeof(double*),trame);
 		for(int i=0; i<trame; i++){
 			coef[i]=malloc(sizeof(float)*26);
 			coef_1[i]=malloc(sizeof(float)*26);
-			coef_final[i]=malloc(sizeof(double)*13);
+			coef_final[i] = new_NArr(sizeof(double),13);
 		}
 		for(int i=0; i<trame; i++){
 			for(int m=0; m<26; m++){
