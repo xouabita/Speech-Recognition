@@ -1,4 +1,5 @@
 #include "hmm.h"
+#include "kmeans.h"
 #include "../NArr/src/narr.h"
 #include <stdlib.h>
 
@@ -58,12 +59,11 @@ HMM * new_HMM () {
   float DATA[N_COMPONENTS][N_COMPONENTS] = DATA_TRANSMAT;
   float STARTPROB[N_COMPONENTS]          = DATA_STARTPROB;
 
-  model->n_components   = N_COMPONENTS;
-  model->n_iter         = N_ITER;
-  model->n_features     = N_FEATURES;
-  model->transmat       = init_matrice(model->n_components, NULL);
-  model->transmat_prior = init_matrice(model->n_components, DATA);
-  model->startprob      = malloc(sizeof(float)*model->n_components);
+  model->n_components    = N_COMPONENTS;
+  model->n_iter          = N_ITER;
+  model->transmat        = init_matrice(model->n_components, NULL);
+  model->transmat_prior  = init_matrice(model->n_components, DATA);
+  model->startprob       = malloc(sizeof(float)*model->n_components);
   model->startprob_prior = malloc(sizeof(float)*model->n_components);
   for (int i=0; i < model->n_components; i++) {
     model->startprob_prior[i] = STARTPROB[i];
@@ -85,7 +85,7 @@ void delete_HMM(HMM * model) {
 // INTERACT WITH MODEL
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-void _init (HMM * model) {
+void _init (HMM * model, float *** obs) {
   float v = 1. / (float)model->n_components;
   for (int i=0; i < model->n_components; i++) {
     model->startprob[i] = v;
@@ -93,6 +93,10 @@ void _init (HMM * model) {
       model->transmat[i][j] = v;
     }
   }
+  model->n_features = N_FEATURES;
+  KMeans means      = new_KMeans(model->n_components);
+  KMeans_fit(means,obs[0]);
+  model->_means_ = means.clusters_centers_;
 }
 
 struct sufficient_stats_t _init_suff_stats(int n_components, int n_features) {
@@ -121,6 +125,7 @@ struct sufficient_stats_t _init_suff_stats(int n_components, int n_features) {
 }
 
 void _del_suff_stats(HMM * model, struct sufficient_stats_t stats) {
+
   // Free 1-dim array
   free(stats.start);
   free(stats.post);
@@ -131,17 +136,17 @@ void _del_suff_stats(HMM * model, struct sufficient_stats_t stats) {
   delete_mat(stats.square_obs, model->n_components);
 }
 
-void fit_HMM (HMM * model, float *** data) {
+void fit_HMM (HMM * model, float *** obs) {
 
   // Initialize transmat & startprob
-  _init(model);
+  _init(model,obs);
 
   for (int i=0; i < model->n_iter; i++) {
     struct sufficient_stats_t stats = _init_suff_stats(model->n_components, model->n_features);
     float curr_logprob = 0.;
-    int len_data = NArr_len(data);
+    int len_data = NArr_len(obs);
     for (int j=0; j < len_data; j++) {
-      float ** seq = data[i];
+      float ** seq = obs[i];
     }
     _del_suff_stats(model,stats);
   }
