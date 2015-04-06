@@ -7,3 +7,4 @@ visualize
 *.dSYM
 src/*.o
 pretreatment_demo
+recognize
