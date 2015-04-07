@@ -39,6 +39,10 @@ int main (int argc, char * argv[]) {
   double ** mfcc_oui = do_mfcc("oui.wav");
   double ** mfcc_non = do_mfcc("non.wav");
 
+  for(int i=0; i<NArr_len(mfcc_oui);i++)
+    for(int j=0;j<NArr_len(mfcc_oui[i]);j++)
+      printf("%d %d %f \n",i,j, mfcc_oui[i][j]);
+
   printf("Testing OUI...\n\n");
   printf(" -> oui_1: %lf\n", dtw_distance(mfcc_oui,mfccs_oui[0]));
   printf(" -> oui_2: %lf\n", dtw_distance(mfcc_oui,mfccs_oui[1]));
