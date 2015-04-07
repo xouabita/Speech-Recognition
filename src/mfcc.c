@@ -114,6 +114,43 @@ complex double ** convertToComplex(double ** frames, int fft_size) {
   return result;
 }
 
+complex double complex_from_polar(double r, double theta_radians) {
+    return ( r * cos(theta_radians) + I * r * sin(theta_radians) );
+}
+
+complex double * fft_simple (complex double * X, int fft_size) {
+  complex double * res = new_NArr(sizeof(complex double), fft_size);
+
+  if (fft_size == 1) {
+    res[0] = X[0];
+    return res;
+  }
+
+  complex double * e   = new_NArr(sizeof(complex double), fft_size/2);
+  complex double * d   = new_NArr(sizeof(complex double), fft_size/2);
+
+  int k;
+
+  for (k = 0; k < fft_size/2; k++) {
+    e[k] = X[2*k];
+    d[k] = X[2*k+1];
+  }
+
+  complex double * E = fft_simple(e, fft_size/2);
+  complex double * D = fft_simple(d, fft_size/2);
+
+  for (k = 0; k < fft_size/2; k++) {
+    D[k] = complex_from_polar(1, -2.*PI*k/fft_size) * D[k];
+  }
+
+  for (k = 0; k < fft_size/2; k++) {
+    res[k]              = E[k] + D[k];
+    res[k + fft_size/2] = E[k] - D[k];
+  }
+
+  return res;
+}
+
 double ** mfcc(double * signal, int samplerate) {
 
   int M = 100;
