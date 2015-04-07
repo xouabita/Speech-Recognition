@@ -34,15 +34,26 @@ int main (int argc, char * argv[]) {
   mfccs_non[1] = do_mfcc("./data/training/NON/2.wav");
   mfccs_non[2] = do_mfcc("./data/training/NON/3.wav");
 
-  printf("Testing...\n");
+  printf("Testing...\n\n\n");
 
   double ** mfcc_oui = do_mfcc("oui.wav");
   double ** mfcc_non = do_mfcc("non.wav");
 
-  printf("OUI: \n");
-  printf("oui_1: %lf\n", dtw_distance(mfccs_oui[0], mfcc_oui) );
-  printf("oui_2: %lf\n", dtw_distance(mfccs_oui[1], mfcc_oui) );
-  printf("oui_3: %lf\n", dtw_distance(mfccs_oui[2], mfcc_oui) );
+  printf("Testing OUI...\n\n");
+  printf(" -> oui_1: %lf\n", dtw_distance(mfcc_oui,mfccs_oui[0]));
+  printf(" -> oui_2: %lf\n", dtw_distance(mfcc_oui,mfccs_oui[1]));
+  printf(" -> oui_3: %lf\n", dtw_distance(mfcc_oui,mfccs_oui[2]));
+  printf(" -> non_1: %lf\n", dtw_distance(mfcc_oui,mfccs_non[0]));
+  printf(" -> non_2: %lf\n", dtw_distance(mfcc_oui,mfccs_non[1]));
+  printf(" -> non_3: %lf\n", dtw_distance(mfcc_oui,mfccs_non[2]));
+
+  printf("\nTesting NON...\n\n");
+  printf(" -> oui_1: %lf\n", dtw_distance(mfcc_non,mfccs_oui[0]));
+  printf(" -> oui_2: %lf\n", dtw_distance(mfcc_non,mfccs_oui[1]));
+  printf(" -> oui_3: %lf\n", dtw_distance(mfcc_non,mfccs_oui[2]));
+  printf(" -> non_1: %lf\n", dtw_distance(mfcc_non,mfccs_non[0]));
+  printf(" -> non_2: %lf\n", dtw_distance(mfcc_non,mfccs_non[1]));
+  printf(" -> non_3: %lf\n", dtw_distance(mfcc_non,mfccs_non[2]));
 
   return 0;
 }
