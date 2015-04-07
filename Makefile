@@ -13,16 +13,13 @@ debug: CCFLAGS += -g
 debug: clean default
 	valgrind --leak-check=yes --dsymutil=yes --suppressions=objc.supp $(BIN) oui.wav
 
-$(BIN): ./src/pretreatment.o ./src/signal_analysis.o ./src/gnuplot.o ./src/narr.o ./src/dtw.o ./src/main.c
+$(BIN): ./src/mfcc.o ./src/gnuplot.o ./src/narr.o ./src/dtw.o ./src/main.c
 	$(CCFLAGS) -o $(BIN) $^	-lsndfile -lm
-
-./src/pretreatment.o: ./src/pretreatment.c
-	$(CCFLAGS) -o $@ -c $<
 
 ./src/gnuplot.o: ./src/gnuplot.c
 	$(CCFLAGS) -o $@ -c $<
 
-./src/signal_analysis.o: ./src/signal_analysis.c
+./src/mfcc.o: ./src/mfcc.c
 	$(CCFLAGS) -o $@ -c $<
 
 ./src/narr.o: ./NArr/src/narr.c

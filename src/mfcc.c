@@ -4,6 +4,8 @@
 #include "mfcc.h"
 #include "../NArr/src/narr.h"
 
+#include <stdio.h>
+
 #define PI 3.141592653589793238462
 
 struct MFCC {
@@ -26,7 +28,7 @@ double ** frame (double * signal, int N, int M) {
   int numbblocks = (lastblockstart)/M + 1;
 
   double ** res = new_NArr(sizeof(double*),numbblocks);
-  for (int i=0; i < 0; i++) {
+  for (int i=0; i < numbblocks; i++) {
     res[i] = new_NArr(sizeof(double),N);
     for (int j=0; j < N; j++) {
       res[i][j] = signal[i*M+j];
@@ -36,14 +38,14 @@ double ** frame (double * signal, int N, int M) {
   return res;
 }
 
-double get_hamming_frame(double * frame, double * result) {
+double get_hamming_frame(double * frame, double ** result) {
 
   int len = NArr_len(frame);
-  result = new_NArr(sizeof(double), len);
+  (*result) = new_NArr(sizeof(double), len);
   double max = 0;
   for (int i=0; i < len; i++) {
     double value = 0.54 - 0.46 * cosf(2 * PI * i / (len - 1));
-    result[i] = value;
+    (*result)[i] = value;
     if (value > max) max = value;
   }
 
@@ -52,7 +54,7 @@ double get_hamming_frame(double * frame, double * result) {
 
 void hamming_window(double ** frames, double * max) {
   double * hamming_res;
-  *max = get_hamming_frame(frames[0],hamming_res);
+  *max = get_hamming_frame(frames[0],&hamming_res);
 
   int len_i = NArr_len(frames);
   int len_j = NArr_len(frames[0]);
