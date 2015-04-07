@@ -103,12 +103,13 @@ void mel_frame(struct MFCC * mfcc, int fft_size, int samplerate) {
 
 complex double ** convertToComplex(double ** frames, int fft_size) {
 
-  int len = NArr_len(frames);
-  complex double ** result = new_NArr(sizeof(complex double*), len);
+  int len_frames = NArr_len(frames);
+  int len_frame  = NArr_len(frames[0]);
+  complex double ** result = new_NArr(sizeof(complex double*), len_frames);
 
-  for (int i=0; i < len; i++) {
+  for (int i=0; i < len_frames; i++) {
     result[i] = new_NArr(sizeof(complex double), fft_size);
-    for (int j=0; j < len; j++) {
+    for (int j=0; j < len_frame; j++) {
       result[i][j] = frames[i][j] + I * frames[i][j];
     }
   }
