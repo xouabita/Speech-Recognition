@@ -209,11 +209,19 @@ double ** mfcc(double * signal, int samplerate) {
   mel_frame(&mfcc, N, samplerate);
 
   complex double ** fft_vars = convertToComplex(frames, N);
+  double         ** result   = new_NArr(sizeof(double*),NArr_len(frames));
 
   int len_frames = NArr_len(frames);
   for (int i = 0; i < len_frames; i++) {
-    complex double * FFT = fft_simple(fft_vars[i], N);
+    complex double * FFT       = fft_simple(fft_vars[i], N);
+    double         * temp_mfcc = compute_mfcc(&mfcc,FFT,N);
+
+    int len = NArr_len(temp_mfcc);
+    result[i] = new_NArr(sizeof(double), len);
+    for (int j=0; j<len; j++) {
+      result[i][j] = temp_mfcc[j];
+    }
   }
 
-  return frames;
+  return result;
 }
