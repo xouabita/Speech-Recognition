@@ -1,4 +1,5 @@
 #include <math.h>
+#include <complex.h>
 #include <string.h>
 #include "mfcc.h"
 #include "../NArr/src/narr.h"
@@ -98,6 +99,21 @@ void mel_frame(struct MFCC * mfcc, int fft_size, int samplerate) {
   }
 }
 
+complex double ** convertToComplex(double ** frames, int fft_size) {
+
+  int len = NArr_len(frames);
+  complex double ** result = new_NArr(sizeof(complex double*), len);
+
+  for (int i=0; i < len; i++) {
+    result[i] = new_NArr(sizeof(complex double), fft_size);
+    for (int j=0; j < len; j++) {
+      result[i][j] = frames[i][j] + I * frames[i][j];
+    }
+  }
+
+  return result;
+}
+
 double ** mfcc(double * signal, int samplerate) {
 
   int M = 100;
@@ -113,5 +129,9 @@ double ** mfcc(double * signal, int samplerate) {
   double ** frames = frame(signal,N,M);
 
   hamming_window(frames,&max);
+  mel_frame(&mfcc, N, samplerate);
+
+  complex double ** fft_vars = convertToComplex(frames, N);
+
   return frames;
 }
