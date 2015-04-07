@@ -151,6 +151,46 @@ complex double * fft_simple (complex double * X, int fft_size) {
   return res;
 }
 
+double * DCT (double * x, int N) {
+  double * X = new_NArr(sizeof(double),N);
+  int k,n;
+  for (k=0; k < N; k++) {
+    X[k] = 0.0;
+    for (n=0; n < N; n++) {
+      X[k] = (X[k] + (x[n]*cos((PI/N)*(n-.5)*k)));
+    }
+  }
+  return X;
+}
+
+double * compute_mfcc(struct MFCC * mfcc, complex double * FFT, int fft_size) {
+
+  double * value = new_NArr(sizeof(double),fft_size*2);
+
+  for (int i = 0; i < fft_size; i++) {
+    value[i]          = fabs( creal(FFT[i]) + creal(FFT[fft_size - i - 1]) - cimag(FFT[i]) - cimag(FFT[fft_size - i - 1]) ) / 2;
+    value[i+fft_size] = fabs( creal(FFT[i]) + cimag(FFT[i]) + cimag(FFT[fft_size - i - 1]) - creal(FFT[fft_size - i - 1]) ) / 2;
+  }
+
+  for (int i=0; i<fft_size/2; i++) {
+    value[i] += value[fft_size - i - 1];
+    value[fft_size + i] += value[2*fft_size - i - 1];
+  }
+
+  double * result = new_NArr(sizeof(double),13);
+  memset(result,0,13);
+
+  for (int i=0; i < 13; i++) {
+    for (int j=0; j < mfcc->mellength[i]; j++) {
+      result[i] += mfcc->mel[i][j] * value[j+mfcc->melstart[i]];
+    }
+    result[i] = log(result[i]);
+  }
+
+  double * ret = DCT(result, 13);
+  return ret;
+}
+
 double ** mfcc(double * signal, int samplerate) {
 
   int M = 100;
@@ -169,6 +209,11 @@ double ** mfcc(double * signal, int samplerate) {
   mel_frame(&mfcc, N, samplerate);
 
   complex double ** fft_vars = convertToComplex(frames, N);
+
+  int len_frames = NArr_len(frames);
+  for (int i = 0; i < len_frames; i++) {
+    complex double * FFT = fft_simple(fft_vars[i], N);
+  }
 
   return frames;
 }
