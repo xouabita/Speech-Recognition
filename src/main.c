@@ -2,10 +2,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <complex.h>
+#include <string.h>
 #include "gnuplot.h"
 #include "mfcc.h"
 #include "../NArr/src/narr.h"
 #include "dtw.h"
+
+#define DATAS_LEN 7
+#define VOC_LEN   3
 
 double ** do_mfcc (char * file_str) {
   SF_INFO file_info;
@@ -21,43 +25,57 @@ double ** do_mfcc (char * file_str) {
 
 int main (int argc, char * argv[]) {
 
-  double *** mfccs_oui = new_NArr(sizeof(double*),3);
-  double *** mfccs_non = new_NArr(sizeof(double*),3);
+  if (argc < 2) {
+    printf("Usage:\n%s file.wav\n", argv[0]);
+    return 1;
+  }
 
-  printf("Learning....\n");
+  // LEARNING
+  char * datas[]      = {"1","2","3","4","5","6","7"};
+  char * vocabulary[] = {"OUI","MARWAN","NON"};
 
-  mfccs_oui[0] = do_mfcc("./data/training/OUI/1.wav");
-  mfccs_oui[1] = do_mfcc("./data/training/OUI/2.wav");
-  mfccs_oui[2] = do_mfcc("./data/training/OUI/3.wav");
+  double **** mfccs   = new_NArr(sizeof(double***),VOC_LEN);
+  for (int i=0; i < VOC_LEN; i++) {
+    mfccs[i] = new_NArr(sizeof(double**),DATAS_LEN);
+  }
 
-  mfccs_non[0] = do_mfcc("./data/training/NON/1.wav");
-  mfccs_non[1] = do_mfcc("./data/training/NON/2.wav");
-  mfccs_non[2] = do_mfcc("./data/training/NON/3.wav");
+  for (int i = 0; i < VOC_LEN; i++) {
+    printf("Learning word \"%s\" ....\n\n",vocabulary[i]);
+    for (int j = 0; j < DATAS_LEN; j++) {
+      char path[100];
+      strcpy(path, "data/training/");
+      strcat(path, vocabulary[i]);
+      strcat(path, "/");
+      strcat(path, datas[j]);
+      strcat(path, ".wav");
+      printf("Computing mfcc for %s...\n", path);
+      mfccs[i][j] = do_mfcc(path);
+    }
+  }
+  printf("\n\n");
+  printf("Computing mfcc for %s...\n", argv[1]);
+  double ** mfcc_file = do_mfcc(argv[1]);
 
-  printf("Testing...\n\n\n");
+  printf("\n\n#################################################\n\n");
 
-  double ** mfcc_oui = do_mfcc("oui.wav");
-  double ** mfcc_non = do_mfcc("non.wav");
+  printf("Comparing input with dictionary via DTW....\n\n");
+  double * result = new_NArr(sizeof(double), VOC_LEN);
 
-  for(int i=0; i<NArr_len(mfcc_oui);i++)
-    for(int j=0;j<NArr_len(mfcc_oui[i]);j++)
-      printf("%d %d %f \n",i,j, mfcc_oui[i][j]);
+  for (int i=0; i < VOC_LEN; i++) {
+    result[i] = 0.;
+    for (int j=0; j < DATAS_LEN; j++) {
+      result[i] += dtw_distance(mfcc_file,mfccs[i][j]);
+    }
+    result[i] /= DATAS_LEN;
+    printf("Score with %s: %lf\n", vocabulary[i], result[i]);
+  }
 
-  printf("Testing OUI...\n\n");
-  printf(" -> oui_1: %lf\n", dtw_distance(mfcc_oui,mfccs_oui[0]));
-  printf(" -> oui_2: %lf\n", dtw_distance(mfcc_oui,mfccs_oui[1]));
-  printf(" -> oui_3: %lf\n", dtw_distance(mfcc_oui,mfccs_oui[2]));
-  printf(" -> non_1: %lf\n", dtw_distance(mfcc_oui,mfccs_non[0]));
-  printf(" -> non_2: %lf\n", dtw_distance(mfcc_oui,mfccs_non[1]));
-  printf(" -> non_3: %lf\n", dtw_distance(mfcc_oui,mfccs_non[2]));
+  int min = 0;
+  for (int i = 1; i < VOC_LEN; i++) {
+    if (result[i] < result[min]) min = i;
+  }
 
-  printf("\nTesting NON...\n\n");
-  printf(" -> oui_1: %lf\n", dtw_distance(mfcc_non,mfccs_oui[0]));
-  printf(" -> oui_2: %lf\n", dtw_distance(mfcc_non,mfccs_oui[1]));
-  printf(" -> oui_3: %lf\n", dtw_distance(mfcc_non,mfccs_oui[2]));
-  printf(" -> non_1: %lf\n", dtw_distance(mfcc_non,mfccs_non[0]));
-  printf(" -> non_2: %lf\n", dtw_distance(mfcc_non,mfccs_non[1]));
-  printf(" -> non_3: %lf\n", dtw_distance(mfcc_non,mfccs_non[2]));
+  printf("\n\n ====> %s <==== \n\n", vocabulary[min]);
 
   return 0;
 }
