@@ -13,4 +13,6 @@ typedef struct model_t {
 Model * new_HMM     (double ** x, int T, int L, int N);
 void    delete_HMM  (Model * model);
 
+void HMM_print(Model * model);
+
 #endif

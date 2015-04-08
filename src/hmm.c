@@ -1,5 +1,6 @@
 #include "hmm.h"
 #include <stdlib.h>
+#include <stdio.h>
 #include "../NArr/src/narr.h"
 #include <time.h>
 #include <math.h>
@@ -87,4 +88,30 @@ void delete_HMM (Model * model) {
   delete_NArr(model->cov);
 
   free(model);
+}
+
+void HMM_print (Model * model) {
+  printf("p0:\n");
+  for (int i = 0; i < model->N; i++)
+    printf("%f", model->p0[i]);
+  printf("\n\na:\n");
+  for (int i = 0; i < model->N; i++) {
+    for (int j = 0; j < model->N; j++)
+      printf("%f ", model->a[i][j]);
+    printf("\n");
+  }
+  printf("\n\nmu:\n");
+  for (int i = 0; i < model->N; i++) {
+    for (int j = 0; j < model->L; j++)
+      printf("%f ", model->mu[i][j]);
+    printf("\n");
+  }
+  printf("\n\ncov:\n");
+  for (int i = 0; i < model->L; i++)
+  {
+    for (int j = 0; j < model->L; j++)
+      printf("%f ", model->cov[i][j]);
+    printf("\n");
+  }
+  printf("\n\n");
 }
