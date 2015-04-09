@@ -5,18 +5,6 @@
 
 #define MIN(a,b) (((a)<(b))?(a):(b))
 
-#ifdef PRINT_DTW
-  void print_mat(int m, int n, double mat[m][n]) {
-    for (int i=0; i < m; i++) {
-      for (int j=0; j < n; j++) {
-        printf("%lf\t", mat[i][j]);
-      }
-      printf("\n");
-    }
-  }
-#endif
-
-
 double euclidean_distance(double * a, double * b) {
   int a_len = NArr_len(a);
   int b_len = NArr_len(b);
@@ -42,20 +30,10 @@ double dtw_distance (double ** actual, double ** training) {
   for (int i=1; i < m; i++) cost[i][0] = cost[i-1][0] + euclidean_distance(actual[i], training[0]);
   for (int j=1; j < n; j++) cost[0][j] = cost[0][j-1] + euclidean_distance(actual[0], training[j]);
 
-  #ifdef PRINT_DTW
-    printf("before:\n");
-    print_mat(m,n,cost);
-  #endif
-
   for (int i=1; i<m; i++)
     for (int j=1; j<n; j++)
       cost[i][j] = MIN(cost[i][j-1],MIN(cost[i][j-1],cost[i-1][j-1]))
         + euclidean_distance(actual[i], training[j]);
-
-  #ifdef PRINT_DTW
-    printf("\n\nafter:\n");
-    print_mat(m,n,cost);
-  #endif
 
   return cost[m-1][n-1];
 }
