@@ -9,7 +9,7 @@
 #include "dtw.h"
 
 #define DATAS_LEN 7
-#define VOC_LEN   3
+#define VOC_LEN   4
 
 double ** do_mfcc (char * file_str) {
   SF_INFO file_info;
@@ -32,7 +32,7 @@ int main (int argc, char * argv[]) {
 
   // LEARNING
   char * datas[]      = {"1","2","3","4","5","6","7"};
-  char * vocabulary[] = {"OUI","MARWAN","NON"};
+  char * vocabulary[10] = {"OUI","MARWAN","NON","OUVRIR"};
 
   double **** mfccs   = new_NArr(sizeof(double***),VOC_LEN);
   for (int i=0; i < VOC_LEN; i++) {
