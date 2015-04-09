@@ -9,10 +9,6 @@ clean:
 	rm -rf *.dSYM
 	rm -f  *.png
 
-print_dtw: CCFLAGS += -DPRINT_DTW
-print_dtw: ./src/dtw.o ./src/narr.o ./src/example_dtw.c
-	$(CCFLAGS) -o ./dtw_example $^
-
 debug: CCFLAGS += -g
 debug: clean default
 	valgrind --leak-check=yes --dsymutil=yes --suppressions=objc.supp $(BIN) oui.wav
