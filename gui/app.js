@@ -1,17 +1,37 @@
 var gui    = require('nw.gui');
-var fs     = require('fs');
-var spawn  = require('child_process').spawn;
-var mkdirp = require('mkdirp');
-var ls     = require('ls');
+var fs       = require('fs');
+var spawn    = require('child_process').spawn;
+var exec     = require('child_process').exec;
+var execSync = require('child_process').execSync;
+var mkdirp   = require('mkdirp');
+var ls       = require('ls');
 
 var recorder = null;
+
+var files = ls("./training/*");
+var fl    = files.length;
 
 $(document).ready(function() {
 
   $('#button').click(function() {
     if ($('#button').hasClass('recording')) {
       recorder.kill();
+      exec("./feature tmp.wav tmp.feature");
       recorder = null;
+      var result = [];
+      var min = 0;
+      for (var i=0; i<fl; i++) {
+        var uri = "./training/"+files[i].name+"/data/";
+        result[i] = 0;
+        for (var j=1; j < 6; j++) {
+          var path = uri + j + ".feature";
+          result[i] = new Number(execSync("./distance tmp.feature "+path).toString(0));
+        }
+        result[i] /= 5;
+        if (result[min] > result[i]) min = i;
+      }
+      var cmd = fs.readFileSync("./training/"+files[min].name+"/cmd").toString(0);
+      exec(cmd);
     } else {
       recorder = spawn('sox',['-d','tmp.wav']);
     }
@@ -36,9 +56,6 @@ $(document).ready(function() {
     fs.writeFileSync(uri, cmd);
     document.location.href = "./record_training.html#" + name;
   })
-  var files = ls("./training/*");
-  console.log(files);
-  var fl    = files.length;
   for(var i=0; i < fl; i++) {
     $('#cmds').append("<div class='cmd'>"+files[i].name+"</div>");
   }

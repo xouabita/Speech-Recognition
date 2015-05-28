@@ -7,7 +7,7 @@
 #include "../NArr/src/narr.h"
 
 double ** read_mfcc(char * input) {
-  int h, w;
+  int h = 0, w = 0;
   double ** result;
   FILE * file_input = fopen(input,"r");
   fscanf(file_input, "%d\n",&h);
@@ -21,7 +21,7 @@ double ** read_mfcc(char * input) {
     }
     fscanf(file_input, "%lf\n", &result[i][w-1]);
   }
-
+  fclose(file_input);
   return result;
 }
 
