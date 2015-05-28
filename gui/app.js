@@ -1,7 +1,8 @@
-var gui = require('nw.gui');
-var fs  = require('fs');
-var spawn = require('child_process').spawn;
+var gui    = require('nw.gui');
+var fs     = require('fs');
+var spawn  = require('child_process').spawn;
 var mkdirp = require('mkdirp');
+var ls     = require('ls');
 
 var recorder = null;
 
@@ -35,4 +36,10 @@ $(document).ready(function() {
     fs.writeFileSync(uri, cmd);
     document.location.href = "./record_training.html#" + name;
   })
+  var files = ls("./training/*");
+  console.log(files);
+  var fl    = files.length;
+  for(var i=0; i < fl; i++) {
+    $('#cmds').append("<div class='cmd'>"+files[i].name+"</div>");
+  }
 });

@@ -42,6 +42,11 @@ body {
   position: relative;
   height: 50px;
   width: 100vw;
+  font-family: monospace;
+  font-size: 25px;
+  line-height: 50px;
+  text-align: center;
+  color: white;
 }
 
 #cmds #add {
