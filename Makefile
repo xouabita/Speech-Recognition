@@ -16,6 +16,13 @@ debug: clean default
 $(BIN): ./src/mfcc.o ./src/gnuplot.o ./src/narr.o ./src/dtw.o ./src/main.c
 	$(CCFLAGS) -o $(BIN) $^	-lsndfile -lm
 
+feature: ./src/mfcc.o ./src/narr.o ./src/feature.c
+	$(CCFLAGS) -o ./gui/feature $^ -lsndfile -lm
+
+
+distance: ./src/dtw.o ./src/narr.o ./src/distance.c
+	$(CCFLAGS) -o ./gui/distance $^ -lm
+
 ./src/gnuplot.o: ./src/gnuplot.c
 	$(CCFLAGS) -o $@ -c $<
 
