@@ -29,9 +29,10 @@ $(document).ready(function() {
   $('#add').click(function () {
     var name = prompt('Name: ');
     var cmd  = prompt('Command: ');
-    mkdirp.sync("./training/" + name);
+    mkdirp.sync("./training/" + name + "/data");
     var uri = "./training/" + name + "/cmd";
     fs.closeSync(fs.openSync(uri, 'w'));
     fs.writeFileSync(uri, cmd);
+    document.location.href = "./record_training.html#" + name;
   })
 });
